@@ -30,9 +30,11 @@ Released   : 20120604
 	<div id="menu-wrapper">
 	<div id="menu">
 		<ul>
-			<li class="current_page_item"><%= link_to 'Home', root_path %></li>
-			<li><%= link_to 'Syllabus', syllabus_path %></li>
-			<li><%= link_to 'Resources', resources_path %></li>
+		  <% main_links.each do |lbl, link| %>
+				<li <%= link == request.path ? 'class=current_page_item' : '' %>>
+					<%= link_to lbl, link %>
+				</li>
+			<% end %>
 		</ul>
 	</div>
 	</div>
