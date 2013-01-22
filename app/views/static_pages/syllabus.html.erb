@@ -14,10 +14,12 @@
         Week <%= week %> : <%= course[:title] %>
         <% if course[:published] %>
           <ul>
-             <li>
+            <li>
+                <strong>
                 <%= link_to "Slides", asset_path("lecture_#{week}.pdf"), :target => '_blank'  %>
                 |
                 <%= link_to "Code", asset_path("lecture_#{week}.txt"), :target => '_blank'  %>
+                </strong>
              </li> 
              <% (course[:links] || []).each do |title, link| %>
                <li><%= link_to title, link, :target => '_blank' %></li>
