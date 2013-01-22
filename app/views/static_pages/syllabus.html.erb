@@ -7,18 +7,27 @@
     <br/>Our lectures correspond loosely with abbreviated versions of chapters
     from the Hartl tutorial.
   </p>
-  
+
   <ul>
-    <li>Week 1 : Introduction, Tools and Development Environment</li>
-    <li>Week 2 : First Models (Users and Microposts)</li>
-    <li>Week 3 : Static Pages, Rendering and the Ruby console</li>
-    <li>Week 4 : Layouts and Asset Pipeline</li>
-    <li>Week 5 : Creating new users</li>
-    <li>Week 6 : Authentication</li>
-    <li>Week 7 : Updating Users</li>
-    <li>Week 8 : Creating Microposts</li>
-    <li>Week 9 : Following Users</li>
-    <li>Week 10 : Stress Testing</li>
+    <% @courses.each do |week, course| %>
+      <li>
+        Week <%= week %> : <%= course[:title] %>
+        <% if course[:published] %>
+          <ul>
+             <li>
+                <%= link_to "Slides", asset_path("lecture_#{week}.pdf"), :target => '_blank'  %>
+                |
+                <%= link_to "Code", asset_path("lecture_#{week}.txt"), :target => '_blank'  %>
+             </li> 
+             <% (course[:links] || []).each do |title, link| %>
+               <li><%= link_to title, link, :target => '_blank' %></li>
+             <% end %>
+
+          </ul>
+        <% end %>
+      </li>
+   
+    <% end %>
   </ul>
-  
+
 </div>

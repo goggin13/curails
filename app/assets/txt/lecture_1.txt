@@ -1,0 +1,85 @@
+
+# Instructions for converting your *.pem key to a *.ppk key using PuTTYgen
+* Open PuTTYgen
+* Click "Load"
+* Choose your *.pem file.
+* Click "Save Private Key", and name it with a *.ppk extension
+* Close PuTTYgen
+
+
+# Instructions for logging into your instance via PuTTY
+* open PuTTY
+* On the left panel, navigate to Connection->SSH->Auth
+  * Next to "Private key file for authentication:", click "Browse", and select
+    the *.ppk file you created on the previous step.  
+* Then, navigate to Connection->SSH->Data
+  * For "Auto-login username", type "ec2-user" 
+* Navigate to "Session" (the very top) 
+  * Copy the "Public Domain Name" of your EC2 instance;  you can see this on
+    the instances page of the Amazon console, when an instance is selected
+  * Paste it into the "Host Name (or IP address)" field 
+  * Click "Open"
+
+
+# Instructions for setting up WinSCP
+* Open WinSCP
+  * Paste in your domain to "Host name", as you did in PuTTY
+  * Type "ec2-user" for the "User name"
+  * Click "..." to select your private key file
+  * Click "Login"
+* Set NotePad++ as the default editor.
+  * Click Options->Preferences
+  * Select "Editors" from the left tab
+  * Click Add
+  * Select "External Editor"
+  * Find NotePad++ (C:\Program Files (x86)\Notepad++)
+  * Click "Open", then "Okay"
+  * Drag it to the top of the editor list
+
+
+~/# cd apps
+~/# rails new info2310 --skip-test-unit
+~/# cd info2310
+~/# rails server 
+
+
+# set up your Git credentials
+~/# git config --global user.name "Your Name Here"
+~/# git config --global user.email "your_email@youremail.com"
+
+
+~/# git init					                # initializes an empty git repository
+~/# git add -A      			            # add all of the application files to the git repo
+~/# git commit -m "initial commit"    # commit all the files that you just added
+
+# tell your local git where the central git repository is
+~/# git remote add origin <your URL from github>
+
+# push the code on your current branch to the remote server
+~/# git push origin master
+
+
+--------------------Gemfile
+group :development, :test do
+  gem 'sqlite3'
+  gem 'rspec-rails'
+  gem 'capybara'
+end
+
+group :production do
+  gem 'pg'
+end
+--------------------------------------------------------------------------------
+
+
+# Install new gems and push to Github
+~/# bundle install --without production
+~/# git add -A
+~/# git commit -m "add testing gems to Gemfile, and add pg for production database"
+~/# git push origin master
+
+
+# Deploy to Heroku
+~/# heroku login   		  # you will be prompted for your heroku credentials
+~/# heroku create		    # create a new heroku app
+~/# git push heroku master  # deploy your code to heroku

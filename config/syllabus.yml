@@ -1,0 +1,49 @@
+1:
+  title: "Introduction, Tools && Development Environment"
+  published: true
+  links: 
+    "Agile Manifesto": "http://agilemanifesto.org/"
+    "Model-View-Controller": "http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller"
+    "Git": "http://git-scm.com"
+    "Github": "http://Github.com"
+    "Heroku": "http://heroku.com"
+    "Ruby": "http://www.ruby-lang.org"
+    "Amazon Web Services Console": "https://console.aws.amazon.com/console/home"
+    "Hartl Chapter": "http://ruby.railstutorial.org/chapters/beginning#top"
+
+2: 
+  title: "Static Pages && Rendering / Ruby"
+  published: false
+
+3:
+  title: "Users && ActiveRecord"
+  published: false
+
+4:
+  title: "Signing up Users"
+  published: false
+
+5:
+  title: "Signing in / Signing out"
+  published: false
+
+6:
+  title: "Microposts"
+  published: false
+
+7:
+  title: "More User Pages"
+  published: false
+
+8:
+  title: "Following Users"
+  published: false
+
+9:
+  title: "Stress Testing && Tools"
+  published: false
+
+10: 
+  title: "TBD"
+  published: false
+
