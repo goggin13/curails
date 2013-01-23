@@ -81,5 +81,6 @@ end
 
 # Deploy to Heroku
 ~/# heroku login   		  # you will be prompted for your heroku credentials
+~/# heroku keys:add     # create and upload your SSH key to heroku
 ~/# heroku create		    # create a new heroku app
 ~/# git push heroku master  # deploy your code to heroku
