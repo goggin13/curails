@@ -2,6 +2,7 @@
   title: "Introduction, Tools && Development Environment"
   published: true
   links: 
+    "Setup": "https://s3.amazonaws.com/matt-goggin/info2310/INFO2310Setup.html"
     "Agile Manifesto": "http://agilemanifesto.org/"
     "Model-View-Controller": "http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller"
     "Git": "http://git-scm.com"
