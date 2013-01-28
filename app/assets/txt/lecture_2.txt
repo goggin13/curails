@@ -1,0 +1,275 @@
+
+
+~/# cd ~/apps/info2310			      # change directories into your application
+~/# git checkout -b static_pages	# checkout a new branch named static_pages
+~/# git branch					          # view the current branches
+
+
+~/# rails s                       # start your rails server
+
+
+--------------------public/hello.html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Greeting</title>
+  </head>
+  <body>
+    <p>Hello, world!</p>
+  </body>
+</html>
+--------------------------------------------------------------------------------
+
+
+~/# rails generate controller StaticPages home help --no-test-framework
+
+
+~/# rails generate rspec:install
+~/# rails generate integration_test static_pages
+
+
+--------------------spec/requests/static_pages_spec.rb
+require 'spec_helper'
+
+describe "Static pages" do
+
+  describe "Home page" do
+
+    it "should have the content 'INFO 2310 MicroPoster'" do
+      visit '/static_pages/home'
+      page.should have_content('INFO 2310 MicroPoster')
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/static_pages_spec.rb
+
+
+--------------------app/views/static_pages/home.html.erb
+<h1>INFO 2310 MicroPoster</h1>
+<p>
+  Welcome to the INFO 2310 MicroPoster App.
+</p>
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/static_pages_spec.rb
+
+
+--------------------spec/requests/static_pages_spec.rb
+require 'spec_helper'
+
+describe "Static pages" do
+
+  describe "Home page" do
+
+    it "should have the content 'INFO 2310 MicroPoster'" do
+      visit '/static_pages/home'
+      page.should have_content('INFO 2310 MicroPoster')
+    end
+  end
+  
+  describe "Help page" do
+
+    it "should have the content 'Help'" do
+      visit '/static_pages/help'
+      page.should have_content('Help')
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/static_pages_spec.rb
+
+
+
+--------------------app/views/static_pages/help.html.erb
+<h1>Help</h1>
+<p>
+  Get help on the INFO2310 MicroPoster at 
+  <a href="http://curails.herokuapp.com">the course website</a>
+</p>
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/static_pages_spec.rb
+
+
+--------------------spec/requests/static_pages_spec.rb
+require 'spec_helper'
+
+describe "Static pages" do
+
+  describe "Home page" do
+
+    it "should have the content 'INFO 2310 MicroPoster'" do
+      visit '/static_pages/home'
+      page.should have_content('INFO 2310 MicroPoster')
+    end
+  end
+
+  describe "Help page" do
+
+    it "should have the content 'Help'" do
+      visit '/static_pages/help'
+      page.should have_content('Help')
+    end
+  end
+
+  describe "About page" do
+
+    it "should have the content 'Help'" do
+      visit '/static_pages/about'
+      page.should have_content("About")
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/static_pages_spec.rb
+
+
+--------------------config/routes.rb
+Info2310::Application.routes.draw do
+  get "static_pages/home"
+
+  get "static_pages/help"
+
+  get "static_pags/about"
+
+  ...
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/static_pages_spec.rb
+
+
+--------------------app/controllers/static_pages_controller.rb
+class StaticPagesController < ApplicationController
+
+  def home
+  end
+
+  def help
+  end
+
+  def about
+  end
+end
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/static_pages/about.html.erb
+<h1>About</h1>
+<p>
+  Like Twitter... but better
+</p>
+--------------------------------------------------------------------------------
+
+
+--------------------spec/requests/static_pages_spec.rb
+require 'spec_helper'
+
+describe "Static pages" do
+
+  describe "Home page" do
+
+    it "should have the content 'INFO 2310 MicroPoster'" do
+      visit '/static_pages/home'
+      page.should have_selector('h1', :text => 'INFO 2310 MicroPoster')
+    end
+    
+    it "should have the title 'Home'" do
+      visit '/static_pages/home'
+      page.should have_selector('title',
+                        :text => "INFO2310 Microposter | Home")
+    end
+  end
+
+  describe "Help page" do
+
+    it "should have the content 'Help'" do
+      visit '/static_pages/help'
+      page.should have_selector('h1', :text => 'Help')
+    end
+
+    it "should have the title 'Help'" do
+      visit '/static_pages/help'
+      page.should have_selector('title',
+                        :text => "INFO2310 Microposter | Help")
+    end
+  end
+
+  describe "About page" do
+
+    it "should have the content 'Help'" do
+      visit '/static_pages/about'
+      page.should have_selector('h1', :text => "About")
+    end
+
+    it "should have the title 'Home'" do
+      visit '/static_pages/about'
+      page.should have_selector('title',
+                        :text => "INFO2310 Microposter | About")
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/layouts/application.html.erb
+<!DOCTYPE html>
+<html>
+<head>
+  <title>INFO2310 Microposter | <%= yield(:title) %></title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<%= yield %>
+
+</body>
+</html>
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/static_pages/home.html.erb
+<% provide(:title, "Home") %>
+<h1>INFO 2310 MicroPoster</h1>
+<p>
+  Welcome to the INFO 2310 MicroPoster App.
+</p>
+--------------------------------------------------------------------------------
+--------------------app/views/static_pages/help.html.erb
+<% provide(:title, "Help") %>
+<h1>Help</h1>
+<p>
+  Get help about the MicroPoster app by visiting the 
+  <a href="http://curails.herokuapp.com">course website</a>.
+</p>
+--------------------------------------------------------------------------------
+--------------------app/views/static_pages/about.html.erb
+<% provide(:title, "About") %>
+<h1>About</h1>
+<p>
+  Like Twitter... but better
+</p>
+--------------------------------------------------------------------------------
+
+
+git status           # see wassup
+git add -A           # add everything
+
+# Commit
+git commit -m "home, help, and about page"
+
+git checkout master       # checkout the master branch
+git merge static_pages    # merge in changes from the feature branch
+git branch -d static_pages   # delete the static pages branch
