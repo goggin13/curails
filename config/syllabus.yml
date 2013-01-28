@@ -14,8 +14,13 @@
 
 2: 
   title: "Static Pages && Rendering / Ruby"
-  published: false
-
+  published: true
+  links:
+    "Hartl Chapter on Static Pages": "http://ruby.railstutorial.org/chapters/static-pages"
+    "Hartl Chapter on Ruby": "http://ruby.railstutorial.org/chapters/rails-flavored-ruby"
+    "Ruby in 20 minutes": "http://www.ruby-lang.org/en/documentation/quickstart/"
+    "Understanding Symbols": "http://glu.ttono.us/articles/2005/08/19/understanding-ruby-symbols"
+    
 3:
   title: "Users && ActiveRecord"
   published: false
