@@ -264,6 +264,21 @@ end
 --------------------------------------------------------------------------------
 
 
+--------------------app/helpers/application_helper.rb
+module ApplicationHelper
+
+  # Returns the full title on a per-page basis.
+  def full_title(page_title)
+    base_title = "INFO2310 Microposter"
+    if page_title.empty?
+      base_title
+    else
+      "#{base_title} | #{page_title}"
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
 git status           # see wassup
 git add -A           # add everything
 
@@ -273,3 +288,5 @@ git commit -m "home, help, and about page"
 git checkout master       # checkout the master branch
 git merge static_pages    # merge in changes from the feature branch
 git branch -d static_pages   # delete the static pages branch
+git push origin master       # push to GitHub
+git push heroku master       # push to Heroku
