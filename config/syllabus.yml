@@ -23,7 +23,11 @@
     
 3:
   title: "Users && ActiveRecord"
-  published: false
+  published: true
+  links:
+    "Hartl Chapter on modeling users": "http://ruby.railstutorial.org/chapters/modeling-user"
+    "Supported Active Record Types": "http://guides.rubyonrails.org/migrations.html#supported-types"
+    "Active Record Callbacks and Validations" : "http://guides.rubyonrails.org/active_record_validations_callbacks.html"
 
 4:
   title: "Signing up Users"

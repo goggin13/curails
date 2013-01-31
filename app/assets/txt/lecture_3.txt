@@ -1,0 +1,315 @@
+git status                    # should display nothing to commit
+git checkout -b user_model    # checkout a new branch
+git branch                    # view branches
+
+
+~/# rails generate model User name:string email:string
+~/# bundle exec rake db:migrate
+
+
+~/# rails console --sandbox
+
+
+--------------------app/models/user.rb
+class User < ActiveRecord::Base
+  attr_accessible :email, :name
+  validates :name, presence: true
+end
+--------------------------------------------------------------------------------
+
+
+~/# rails console --sandbox
+~/# bundle exec rspec spec/models/user_spec.rb
+
+~/# bundle exec rake db:test:prepare
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+user_spec #1
+--------------------spec/models/user_spec.rb
+require 'spec_helper'
+
+describe User do
+
+  before do
+    @user = User.new(name: "Example User", 
+                     email: "user@example.com")
+  end
+
+  describe "with valid attributes" do
+    
+    it "should be valid" do
+      @user.should be_valid
+    end
+  end
+  
+  describe "without a name" do
+    
+    before do
+      @user.name = ""
+    end
+    
+    it "should not be valid" do
+      @user.should_not be_valid
+    end
+  end
+  
+  describe "without an email" do
+    
+    before do
+      @user.email = ""
+    end
+  
+    it "should not be valid" do
+      @user.should_not be_valid
+    end    
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+--------------------app/models/user.rb
+class User < ActiveRecord::Base
+  attr_accessible :email, :name
+  validates :name, presence: true
+  validates :email, presence: true
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+--------------------app/models/user.rb
+class User < ActiveRecord::Base
+  attr_accessible :email, :name
+  
+  validates :name, presence: true,
+                      length: { minimum: 4, maximum: 50 }
+
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates :email, presence: true,
+                        format: { with: VALID_EMAIL_REGEX },
+                      uniqueness: { case_sensitive: false }
+end
+--------------------------------------------------------------------------------
+
+
+~/# rails generate migration add_hashed_password_to_users hashed_password:string
+~/# bundle exec rake db:migrate
+
+
+user_spec #2
+--------------------spec/models/user_spec.rb
+require 'spec_helper'
+
+describe User do
+
+  before do
+    @user = User.new(name: "Example User", 
+                     email: "user@example.com",
+                     password: "foobar")
+  end
+
+  describe "with valid attributes" do
+    
+    it "should be valid" do
+      @user.should be_valid
+    end
+  end
+  
+  describe "without a name" do
+    
+    before do
+      @user.name = ""
+    end
+    
+    it "should not be valid" do
+      @user.should_not be_valid
+    end
+  end
+  
+  describe "without an email" do
+    
+    before do
+      @user.email = ""
+    end
+  
+    it "should not be valid" do
+      @user.should_not be_valid
+    end    
+  end
+   
+  describe "hashed_password" do
+    
+    it "should be populated after the user has been saved" do
+      @user.save
+      @user.hashed_password.should_not be_nil
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+--------------------app/models/user.rb
+class User < ActiveRecord::Base
+  attr_accessible :email, :name
+  
+  validates :name, presence: true,
+                      length: { minimum: 4, maximum: 50 }
+
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates :email, presence: true,
+                        format: { with: VALID_EMAIL_REGEX },
+                      uniqueness: { case_sensitive: false }
+  
+  before_save :encrypt_password
+                
+  def encrypt_password
+    self.hashed_password = encrypt(password)
+  end
+
+  def encrypt(string)
+    Digest::SHA2.hexdigest(string)
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+user_spec #3
+--------------------spec/models/user_spec.rb
+require 'spec_helper'
+
+describe User do
+
+  before do
+    @user = User.new(name: "Example User", 
+                     email: "user@example.com",
+                     password: "foobar")
+  end
+
+  describe "with valid attributes" do
+    
+    it "should be valid" do
+      @user.should be_valid
+    end
+  end
+  
+  describe "without a name" do
+    
+    before do
+      @user.name = ""
+    end
+    
+    it "should not be valid" do
+      @user.should_not be_valid
+    end
+  end
+  
+  describe "without an email" do
+    
+    before do
+      @user.email = ""
+    end
+  
+    it "should not be valid" do
+      @user.should_not be_valid
+    end    
+  end
+   
+  describe "hashed_password" do
+    
+    it "should be populated after the user has been saved" do
+      @user.save
+      @user.hashed_password.should_not be_nil
+    end
+  end
+  
+  describe "authenticate" do
+
+    before do
+      @user.save
+    end
+
+    it "should return the user with successful credentials" do
+      User.authenticate(@user.email, @user.password).should == @user
+    end
+
+    it "should return nil if the given email does not exist" do
+      User.authenticate("noone@example.com", @user.password).should be_nil
+    end
+
+    it "should return nil if the wrong password is provided" do
+      User.authenticate(@user.email, "wrong_password").should be_nil
+    end
+  end  
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+--------------------app/models/user.rb
+class User < ActiveRecord::Base
+  attr_accessible :email, :name
+  
+  validates :name, presence: true,
+                      length: { minimum: 4, maximum: 50 }
+
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates :email, presence: true,
+                        format: { with: VALID_EMAIL_REGEX },
+                      uniqueness: { case_sensitive: false }
+  
+  before_save :encrypt_password
+                
+  def encrypt_password
+    self.hashed_password = encrypt(password)
+  end
+
+  def encrypt(string)
+    Digest::SHA2.hexdigest(string)
+  end
+  
+  def has_password?(plain_text_password)
+    self.hashed_password == encrypt(plain_text_password)
+  end
+
+  def self.authenticate(email, plain_text_password)
+    user = User.find_by_email(email)
+
+    if user && user.has_password?(plain_text_password)
+      user
+    else
+      nil
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+~/# bundle exec rspec 
+
+~/# git status        # see what we modified
+~/# git add -A        # add all the changes
+~/# git commit -m "User model"
+
+# merge it back into master
+~/# git checkout master
+~/# git merge user_model
+
+~/# git push origin master    # github
+~/# git push heroku master    # heroku
+
+
