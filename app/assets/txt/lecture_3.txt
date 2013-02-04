@@ -3,11 +3,42 @@ git checkout -b user_model    # checkout a new branch
 git branch                    # view branches
 
 
-~/# rails generate model User name:string email:string
+~/# rails generate scaffold User name:string email:string
 ~/# bundle exec rake db:migrate
+~/# rails s
 
+~/# rails console
 
-~/# rails console --sandbox
+~/# User.new
+~/# user = User.new(name: "Matt", email: "mg343@cornell.edu")
+~/# user.save
+~/# user
+~/# user.name 
+~/# user.email
+~/# user.updated_at
+~/# User.create(name: "A Nother", email: "another@example.org")
+~/# foo = User.create(name: "Foo", email: "foo@bar.com")
+~/# User.count
+~/# foo.destroy
+~/# foo
+~/# User.count
+~/# User.find(1)
+~/# User.find(3)
+~/# User.find_by_id(3)
+~/# User.find_by_email('mg343@cornell.edu')
+~/# User.find_by_name('Matt')
+~/# User.all
+~/# User.first
+~/# User.last
+~/# User.all.each { |u| puts u.name }
+~/# user.email
+~/# user.email = "goggin@example.com"
+~/# user.save
+~/# user.email = "williamson@example.com"
+~/# user.reload.email 
+~/# user.update_attributes(name: "The Dude", email: "dude@abides.org")
+~/# user.update_attributes(created_at: "2003-01-30 23:54:42 +0000")
+~/# User.create(name: "", email: "")
 
 
 --------------------app/models/user.rb
@@ -18,11 +49,16 @@ end
 --------------------------------------------------------------------------------
 
 
-~/# rails console --sandbox
-~/# bundle exec rspec spec/models/user_spec.rb
+~/# rails console
+~/# user = User.new(name: "", email: "mg343@cornell.edu")
+~/# user.save
+~/# user.valid?
+~/# user.errors.full_messages
 
+~/# bundle exec rspec spec/models/user_spec.rb
 ~/# bundle exec rake db:test:prepare
 ~/# bundle exec rspec spec/models/user_spec.rb
+~/# bundle exec rspec
 
 
 user_spec #1
@@ -100,7 +136,7 @@ end
 
 ~/# rails generate migration add_hashed_password_to_users hashed_password:string
 ~/# bundle exec rake db:migrate
-
+~/# bundle exec rake db:test:prepare
 
 user_spec #2
 --------------------spec/models/user_spec.rb
@@ -142,7 +178,7 @@ describe User do
       @user.should_not be_valid
     end    
   end
-   
+     
   describe "hashed_password" do
     
     it "should be populated after the user has been saved" do
@@ -172,7 +208,7 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
                 
   def encrypt_password
-    self.hashed_password = encrypt(password)
+    @hashed_password = encrypt(password)
   end
 
   def encrypt(string)
@@ -225,7 +261,7 @@ describe User do
       @user.should_not be_valid
     end    
   end
-   
+        
   describe "hashed_password" do
     
     it "should be populated after the user has been saved" do
@@ -274,7 +310,7 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
                 
   def encrypt_password
-    self.hashed_password = encrypt(password)
+    @hashed_password = encrypt(password)
   end
 
   def encrypt(string)
@@ -282,7 +318,7 @@ class User < ActiveRecord::Base
   end
   
   def has_password?(plain_text_password)
-    self.hashed_password == encrypt(plain_text_password)
+    @hashed_password == encrypt(plain_text_password)
   end
 
   def self.authenticate(email, plain_text_password)

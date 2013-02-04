@@ -27,7 +27,8 @@
   links:
     "Hartl Chapter on modeling users": "http://ruby.railstutorial.org/chapters/modeling-user"
     "Supported Active Record Types": "http://guides.rubyonrails.org/migrations.html#supported-types"
-    "Active Record Callbacks and Validations" : "http://guides.rubyonrails.org/active_record_validations_callbacks.html"
+    "Active Record Callbacks and Validations": "http://guides.rubyonrails.org/active_record_validations_callbacks.html"
+    "database.yml examples": "https://gist.github.com/961978"
 
 4:
   title: "Signing up Users"
