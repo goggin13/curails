@@ -27,8 +27,11 @@
   links:
     "Hartl Chapter on modeling users": "http://ruby.railstutorial.org/chapters/modeling-user"
     "Supported Active Record Types": "http://guides.rubyonrails.org/migrations.html#supported-types"
+    "Routing in Rails": "http://guides.rubyonrails.org/routing.html"
+    "REST": "http://en.wikipedia.org/wiki/Representational_state_transfer"
     "Active Record Callbacks and Validations": "http://guides.rubyonrails.org/active_record_validations_callbacks.html"
     "database.yml examples": "https://gist.github.com/961978"
+    "attr_accessor explained": "http://stackoverflow.com/questions/4370960/what-is-attr-accessor-in-ruby"
 
 4:
   title: "Signing up Users"
