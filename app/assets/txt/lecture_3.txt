@@ -140,4 +140,8 @@ end
 ~/# git push origin master    # github
 ~/# git push heroku master    # heroku
 
+# we also need to run the migrations on heroku
+heroku run rake db:migrate
+
+
 
