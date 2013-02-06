@@ -58,8 +58,6 @@ end
 ~/# user.errors.full_messages
 
 ~/# bundle exec rspec spec/models/user_spec.rb
-~/# bundle exec rspec
-
 
 --------------------spec/models/user_spec.rb
 require 'spec_helper'
@@ -109,18 +107,6 @@ end
 --------------------app/models/user.rb
 class User < ActiveRecord::Base
   attr_accessible :email, :name
-  validates :name, presence: true
-  validates :email, presence: true
-end
---------------------------------------------------------------------------------
-
-
-~/# bundle exec rspec spec/models/user_spec.rb
-
-
---------------------app/models/user.rb
-class User < ActiveRecord::Base
-  attr_accessible :email, :name
   
   validates :name, presence: true,
                       length: { minimum: 4, maximum: 50 }
@@ -132,6 +118,13 @@ class User < ActiveRecord::Base
 end
 --------------------------------------------------------------------------------
 
+
+# Just replace the valid_attributes function with this code
+--------------------spec/controllers/users_controller_spec.rb
+def valid_attributes
+  { "name" => "MyString", "email" => "mystring@example.com" }
+end
+--------------------------------------------------------------------------------
 
 ~/# bundle exec rspec spec/models/user_spec.rb
 ~/# bundle exec rspec 
