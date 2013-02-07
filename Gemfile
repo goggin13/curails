@@ -8,10 +8,6 @@ gem 'rails', '3.2.8'
 gem 'pg'
 gem 'devise'
 
-group :development do
-  gem 'thin'
-end
-
 group :development, :test do
   gem 'rspec-rails'
 end
