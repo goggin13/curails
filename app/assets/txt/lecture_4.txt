@@ -1,0 +1,444 @@
+
+--------------------app/views/users/show.html.erb
+<p>
+  <%= pluralize(@user.micro_posts.length, "MicroPost") %>
+</p>
+
+<ul>
+  <% @user.micro_posts.each do |post| %>
+    <li>
+      <span class='micro_post_timestamp'>
+        <%= post.created_at.strftime("%m/%d %l-%M") %>
+      </span> 
+      <%= post.content %>
+    </li>
+  <% end %>
+</ul>
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/layouts/application.html.erb
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= full_title(yield(:title)) %></title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+  <%= render 'layouts/header' %>
+
+  <div class="container"> 
+    <%= yield %>
+    <hr />
+    <%= render 'layouts/footer' %>
+  </div>
+
+</body>
+</html>
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/layouts/_header.html.erb
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+
+      <%= link_to "MicroPoster", root_path, class: 'brand' %>
+
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li><%= link_to 'Home', root_path %></li>
+          <li><%= link_to 'Help', static_pages_help_path %></li>
+          <li><%= link_to 'About', static_pages_about_path %></li>
+          <li><%= link_to 'My Profile', '#' %></li>
+          <li><%= link_to 'My Account', '#' %></li>
+          <li><%= link_to 'Logout', '#' %></li>
+        </ul>
+
+        <form class="navbar-form pull-right">
+          <input type="text" placeholder="Email" class="span2">
+          <input type="password" placeholder="Password" class="span2">
+          <button class="btn" type="submit">Sign in</button>
+        </form>
+
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/layouts/_footer.html.erb
+<footer>
+  
+  <small>
+    <%= link_to 'Rails Tutorial', 'http://railstutorial.org/' %>
+    by Michael Hartl
+  </small>
+  | 
+  <%= link_to "INFO2310", 'http://curails.herokuapp.com' %>
+
+</footer>
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/static_pages/about.html.erb
+<% provide(:title, 'About') %>
+<div class='row'>
+  <div class='span12'>
+    <h1>About</h1>
+    <p>
+      Like Twitter... but better
+    </p>
+  </div>
+</div>
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/static_pages/help.html.erb
+<% provide(:title, 'Help') %>
+<div class='row'>
+  <div class='span12'>
+    <h1>Help</h1>
+    <p>
+      Get help on the INFO2310 MicroPoster at 
+      <a href="http://curails.herokuapp.com">the course website</a>
+    </p>
+  </div>
+</div>
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/static_pages/home.html.erb
+<% provide(:title, 'Home') %>
+<div class="hero-unit">
+  <h1>INFO 2310 MicroPoster</h1>
+  <p>
+    This is a template for a simple marketing or informational website. It
+    includes a large callout called the hero unit and three supporting pieces of
+    content. Use it as a starting point to create something more unique.
+  </p>
+  
+  <p>
+    <%= link_to 'Sign Up', new_user_path, class: 'btn btn-primary btn-large' %>
+  </p>
+
+</div>
+--------------------------------------------------------------------------------
+
+
+--------------------app/assets/stylesheets/custom.css.scss
+@import "bootstrap";
+
+/* universal */
+
+html {
+  overflow-y: scroll;
+}
+
+body {
+  padding-top: 60px;
+}
+
+section {
+  overflow: auto;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.center {
+  text-align: center;
+}
+
+.center h1 {
+  margin-bottom: 10px;
+}
+--------------------------------------------------------------------------------
+
+
+~/# rails generate migration add_hashed_password_and_salt_to_users hashed_password:string salt:string
+~/# bundle exec rake db:migrate
+~/# bundle exec rake db:test:prepare
+
+
+--------------------spec/models/user_spec.rb
+require 'spec_helper'
+
+describe User do
+
+  before do
+    @user = User.new(name: "Example User", 
+                     email: "user@example.com",
+                     password: "foobar")
+  end
+
+  describe "with valid attributes" do
+    
+    it "should be valid" do
+      @user.should be_valid
+    end
+  end
+  
+  describe "without a name" do
+    
+    before do
+      @user.name = ""
+    end
+    
+    it "should not be valid" do
+      @user.should_not be_valid
+    end
+  end
+  
+  describe "without an email" do
+    
+    before do
+      @user.email = ""
+    end
+  
+    it "should not be valid" do
+      @user.should_not be_valid
+    end    
+  end
+  
+  describe "without a password" do
+    
+    before do
+      @user.password = ""
+    end
+    
+    it "should not be valid" do
+      @user.should_not be_valid
+    end
+  end
+  
+  describe "hashed_password" do
+    
+    it "should be populated after the user has been saved" do
+      @user.save
+      @user.hashed_password.should_not be_blank
+    end
+  end
+  
+  describe "salt" do
+    
+    it "should be populated after the user has been saved" do
+      @user.save
+      @user.salt.should_not be_blank
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+--------------------app/models/user.rb
+class User < ActiveRecord::Base
+  attr_accessor :password
+  attr_accessible :email, :name, :password
+  
+  validates :name, presence: true,
+                      length: { minimum: 4, maximum: 50 }
+
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates :email, presence: true,
+                        format: { with: VALID_EMAIL_REGEX },
+                      uniqueness: { case_sensitive: false }
+  
+  has_many :micro_posts
+
+  before_save :encrypt_password
+                
+  def encrypt_password
+    self.salt ||= Digest::SHA256.hexdigest("--#{Time.now.to_s}- -#{email}--")
+    self.hashed_password ||= encrypt(password)
+  end
+
+  def encrypt(raw_password)
+    Digest::SHA256.hexdigest("--#{salt}--#{raw_password}--")
+  end
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+~/# bundle exec rspec
+
+
+# just replace the valid_attributes function
+--------------------spec/controllers/user_controller_spec.rb
+def valid_attributes
+  { "name" => "MyString", "email" => "matt@hotmail.com", "password" => "foobar" }
+end
+--------------------------------------------------------------------------------
+
+
+# replace the call to User.create! so it has a password
+--------------------spec/controllers/user_controller_spec.rb
+@user = User.create! name: "Matt", 
+                     email: "goggin13@gmail.com",
+                     password: "foobar"
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec
+
+
+# just replace the 'describe "with valid attributes" do' block
+--------------------spec/models/user_spec.rb
+describe "with valid attributes" do
+  
+  it "should be valid" do
+    @user.should be_valid
+  end
+
+  it "should be valid if it has an encrypted_password but no password" do
+    @user.save
+    @user.password = nil
+    @user.should be_valid
+  end
+end
+--------------------------------------------------------------------------------
+
+
+--------------------spec/models/user_spec.rb
+require 'spec_helper'
+
+describe User do
+
+  before do
+    @user = User.new(name: "Example User", 
+                     email: "user@example.com",
+                     password: "foobar")
+  end
+
+  describe "with valid attributes" do
+
+    it "should be valid" do
+      @user.should be_valid
+    end
+
+    it "should be valid if it has an encrypted_password but no password" do
+      @user.save
+      @user.password = nil
+      @user.should be_valid
+    end
+  end
+  
+  describe "without a name" do
+    
+    before do
+      @user.name = ""
+    end
+    
+    it "should not be valid" do
+      @user.should_not be_valid
+    end
+  end
+  
+  describe "without an email" do
+    
+    before do
+      @user.email = ""
+    end
+  
+    it "should not be valid" do
+      @user.should_not be_valid
+    end    
+  end
+        
+  describe "without a password" do
+    
+    before do
+      @user.password = ""
+    end
+    
+    it "should not be valid" do
+      @user.should_not be_valid
+    end
+  end
+  
+  describe "hashed_password" do
+    
+    it "should be populated after the user has been saved" do
+      @user.save
+      @user.hashed_password.should_not be_blank
+    end
+  end
+  
+  describe "salt" do
+    
+    it "should be populated after the user has been saved" do
+      @user.save
+      @user.salt.should_not be_blank
+    end
+  end
+  
+  describe "authenticate" do
+
+    before do
+      @user.save
+    end
+
+    it "should return the user with correct credentials" do
+      User.authenticate(@user.email, @user.password).should == @user
+    end
+
+    it "should return nil if the given email does not exist" do
+      User.authenticate("noone@example.com", @user.password).should be_nil
+    end
+
+    it "should return nil if the wrong password is provided" do
+      User.authenticate(@user.email, "wrong_password").should be_nil
+    end
+  end  
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+--------------------app/models/user.rb
+class User < ActiveRecord::Base
+  attr_accessible :email, :name
+  
+  validates :name, presence: true,
+                      length: { minimum: 4, maximum: 50 }
+
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates :email, presence: true,
+                        format: { with: VALID_EMAIL_REGEX },
+                      uniqueness: { case_sensitive: false }
+  
+  before_save :encrypt_password
+                
+  def encrypt_password
+    @hashed_password = encrypt(password)
+  end
+
+  def encrypt(string)
+    Digest::SHA2.hexdigest(string)
+  end
+  
+  def has_password?(plain_text_password)
+    @hashed_password == encrypt(plain_text_password)
+  end
+
+  def self.authenticate(email, plain_text_password)
+    user = User.find_by_email(email)
+    user && user.has_password?(plain_text_password) ? user : nil
+  end
+end
+--------------------------------------------------------------------------------
+
+
+links
+"Twitter Bootstrap": "http://twitter.github.com/bootstrap/"

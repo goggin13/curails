@@ -12,4 +12,9 @@ class StaticPagesController < ApplicationController
   def resources
   end    
   
+
+  def code
+    
+  end
+
 end

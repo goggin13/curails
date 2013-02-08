@@ -55,5 +55,7 @@ Curails::Application.routes.draw do
   
   match '/resources' => 'static_pages#resources'
   match '/syllabus' => 'static_pages#syllabus'
+  match '/code' => 'static_pages#code'
+
   root :to => 'static_pages#home'
 end
