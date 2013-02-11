@@ -35,7 +35,7 @@
 
 4:
   title: "Relations && Authenticating Users"
-  published: false
+  published: true 
 
 5:
   title: "Signing in / Signing out"

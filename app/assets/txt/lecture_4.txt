@@ -1,19 +1,73 @@
 
+
+# add this line to app/models/user.rb
+--------------------app/models/user.rb
+has_many :micro_posts
+--------------------------------------------------------------------------------
+
+
+# add this line to app/models/micro_post.rb
+--------------------app/models/micro_post.rb
+belongs_to :user
+--------------------------------------------------------------------------------
+
+
+--------------------spec/requests/user_spec.rb
+require 'spec_helper'
+
+describe "GET /users/id" do
+  
+  before do
+    @user = User.create! name: "Matt", email: "goggin13@gmail.com"
+    3.times { |i| @user.micro_posts.create! content: "hello world - #{i}" }
+  end
+
+  it "should display the number of posts the user has" do
+    visit user_path(@user)
+    page.should have_content("3 MicroPosts")
+  end
+
+  it "should list the content for each micro post " do
+    visit user_path(@user)
+    3.times do |i|
+      page.should have_content "hello world - #{i}"
+    end
+  end
+end
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/micro_posts/_micro_post.html.erb
+<p>
+  <span class='micro_post_timestamp'>
+     <%= micro_post.created_at.strftime("%m/%d %l-%M") %>
+   </span> 
+   <%= micro_post.content %>
+</p>
+--------------------------------------------------------------------------------
+
+
 --------------------app/views/users/show.html.erb
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @user.name %>
+</p>
+
+<p>
+  <b>Email:</b>
+  <%= @user.email %>
+</p>
+
 <p>
   <%= pluralize(@user.micro_posts.length, "MicroPost") %>
 </p>
 
-<ul>
-  <% @user.micro_posts.each do |post| %>
-    <li>
-      <span class='micro_post_timestamp'>
-        <%= post.created_at.strftime("%m/%d %l-%M") %>
-      </span> 
-      <%= post.content %>
-    </li>
-  <% end %>
-</ul>
+<%= render @user.micro_posts %>
+
+<%= link_to 'Edit', edit_user_path(@user) %> |
+<%= link_to 'Back', users_path %>
 --------------------------------------------------------------------------------
 
 
@@ -57,12 +111,6 @@
           <li><%= link_to 'My Account', '#' %></li>
           <li><%= link_to 'Logout', '#' %></li>
         </ul>
-
-        <form class="navbar-form pull-right">
-          <input type="text" placeholder="Email" class="span2">
-          <input type="password" placeholder="Password" class="span2">
-          <button class="btn" type="submit">Sign in</button>
-        </form>
 
       </div><!--/.nav-collapse -->
     </div>
@@ -161,6 +209,23 @@ textarea {
 --------------------------------------------------------------------------------
 
 
+--------------------config/routes.rb
+Info2310::Application.routes.draw do
+  resources :micro_posts
+  resources :users
+
+  get "static_pages/home"
+  get "static_pages/help"
+  get "static_pages/about"
+
+  root :to => 'static_pages#home'
+end
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec
+
+
 ~/# rails generate migration add_hashed_password_and_salt_to_users hashed_password:string salt:string
 ~/# bundle exec rake db:migrate
 ~/# bundle exec rake db:test:prepare
@@ -244,6 +309,8 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessible :email, :name, :password
   
+  validates :password, presence: true
+  
   validates :name, presence: true,
                       length: { minimum: 4, maximum: 50 }
 
@@ -281,7 +348,7 @@ end
 
 
 # replace the call to User.create! so it has a password
---------------------spec/controllers/user_controller_spec.rb
+--------------------spec/models/user_spec.rb
 @user = User.create! name: "Matt", 
                      email: "goggin13@gmail.com",
                      password: "foobar"
@@ -289,6 +356,15 @@ end
 
 
 ~/# bundle exec rspec
+
+
+add this field to the user form
+--------------------app/views/users/_form.html.erb
+<div class="field">
+  <%= f.label :password %><br />
+  <%= f.password_field :password %>
+</div>
+--------------------------------------------------------------------------------
 
 
 # just replace the 'describe "with valid attributes" do' block
@@ -306,6 +382,18 @@ describe "with valid attributes" do
   end
 end
 --------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
+
+
+update the password validation in the User class
+--------------------app/models/user.rb
+validates :password, presence: true, if: "hashed_password.blank?"
+--------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb
 
 
 --------------------spec/models/user_spec.rb
@@ -408,7 +496,10 @@ end
 
 --------------------app/models/user.rb
 class User < ActiveRecord::Base
-  attr_accessible :email, :name
+  attr_accessor :password
+  attr_accessible :email, :name, :password
+  
+  validates :password, presence: true, if: "hashed_password.blank?"
   
   validates :name, presence: true,
                       length: { minimum: 4, maximum: 50 }
@@ -418,23 +509,20 @@ class User < ActiveRecord::Base
                         format: { with: VALID_EMAIL_REGEX },
                       uniqueness: { case_sensitive: false }
   
+  has_many :micro_posts
+
   before_save :encrypt_password
                 
   def encrypt_password
-    @hashed_password = encrypt(password)
+    self.salt ||= Digest::SHA256.hexdigest("--#{Time.now.to_s}- -#{email}--")
+    self.hashed_password ||= encrypt(password)
   end
 
-  def encrypt(string)
-    Digest::SHA2.hexdigest(string)
+  def encrypt(raw_password)
+    Digest::SHA256.hexdigest("--#{salt}--#{raw_password}--")
   end
   
-  def has_password?(plain_text_password)
-    @hashed_password == encrypt(plain_text_password)
-  end
-
   def self.authenticate(email, plain_text_password)
-    user = User.find_by_email(email)
-    user && user.has_password?(plain_text_password) ? user : nil
   end
 end
 --------------------------------------------------------------------------------
@@ -442,3 +530,4 @@ end
 
 links
 "Twitter Bootstrap": "http://twitter.github.com/bootstrap/"
+"Conditional Validation": "http://guides.rubyonrails.org/active_record_validations_callbacks.html#conditional-validation"
