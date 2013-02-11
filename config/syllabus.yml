@@ -34,7 +34,7 @@
     "attr_accessor explained": "http://stackoverflow.com/questions/4370960/what-is-attr-accessor-in-ruby"
 
 4:
-  title: "Signing up Users"
+  title: "Relations && Authenticating Users"
   published: false
 
 5:
