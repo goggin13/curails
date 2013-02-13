@@ -340,7 +340,7 @@ end
 
 
 # just replace the valid_attributes function
---------------------spec/controllers/user_controller_spec.rb
+--------------------spec/controllers/users_controller_spec.rb
 def valid_attributes
   { "name" => "MyString", "email" => "matt@hotmail.com", "password" => "foobar" }
 end
@@ -348,7 +348,7 @@ end
 
 
 # replace the call to User.create! so it has a password
---------------------spec/models/user_spec.rb
+--------------------spec/requests/user_spec.rb
 @user = User.create! name: "Matt", 
                      email: "goggin13@gmail.com",
                      password: "foobar"
@@ -515,7 +515,7 @@ class User < ActiveRecord::Base
                 
   def encrypt_password
     self.salt ||= Digest::SHA256.hexdigest("--#{Time.now.to_s}- -#{email}--")
-    self.hashed_password ||= encrypt(password)
+    self.hashed_password = encrypt(password)
   end
 
   def encrypt(raw_password)
@@ -526,4 +526,3 @@ class User < ActiveRecord::Base
   end
 end
 --------------------------------------------------------------------------------
-
