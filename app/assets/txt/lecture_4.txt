@@ -1,5 +1,10 @@
 
 
+~/# git status                  # should display nothing to commit
+~/# git checkout -b bootstrap   # checkout a new branch
+~/# git branch                  # view branches
+
+
 ~/# bundle exec rspec 
 
 
@@ -91,7 +96,7 @@ end
 
 # Add this line to our Gemfile (right below the Rails gem is fine)
 --------------------Gemfile
-gem 'bootstrap-sass', '~> 2.2.2.0'
+gem 'bootstrap-sass', '2.2.2.0'
 --------------------------------------------------------------------------------
 
 
@@ -192,9 +197,8 @@ gem 'bootstrap-sass', '~> 2.2.2.0'
 <div class="hero-unit">
   <h1>INFO 2310 MicroPoster</h1>
   <p>
-    This is a template for a simple marketing or informational website. It
-    includes a large callout called the hero unit and three supporting pieces of
-    content. Use it as a starting point to create something more unique.
+    This is a sample website used in INFO 2310 to learn Ruby on Rails.  Please
+    sign up and share your thoughts with us in 5-140 character chunks.
   </p>
   
   <p>
@@ -245,7 +249,7 @@ Info2310::Application.routes.draw do
   get "static_pages/help"
   get "static_pages/about"
 
-  root :to => 'static_pages#home'
+  root to: 'static_pages#home'
 end
 --------------------------------------------------------------------------------
 

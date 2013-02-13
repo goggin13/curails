@@ -40,6 +40,7 @@
     "Twitter Bootstrap": "http://twitter.github.com/bootstrap/"
     "Conditional Validation": "http://guides.rubyonrails.org/active_record_validations_callbacks.html#conditional-validation"
     "Asset Pipeline": "http://guides.rubyonrails.org/asset_pipeline.html"
+    "Ruby strftime": "http://www.ruby-doc.org/core-1.9.3/Time.html#method-i-strftime"
     
 5:
   title: "Signing in / Signing out"
