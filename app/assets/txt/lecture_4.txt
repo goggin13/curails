@@ -1,5 +1,17 @@
 
 
+~/# bundle exec rspec 
+
+
+# If your spec/controllers/micro_posts_controller_spec.rb 
+# is failing, be sure to update the valid_attributes function
+--------------------spec/controllers/micro_posts_controller_spec.rb 
+def valid_attributes
+ { "user_id" => "1", "content" => "hello world" }
+end
+--------------------------------------------------------------------------------
+
+
 # add this line to app/models/user.rb
 --------------------app/models/user.rb
 has_many :micro_posts
@@ -37,6 +49,9 @@ end
 --------------------------------------------------------------------------------
 
 
+~/# bundle exec rspec spec/requests/user_spec.rb
+
+
 --------------------app/views/micro_posts/_micro_post.html.erb
 <p>
   <span class='micro_post_timestamp'>
@@ -69,6 +84,18 @@ end
 <%= link_to 'Edit', edit_user_path(@user) %> |
 <%= link_to 'Back', users_path %>
 --------------------------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/user_spec.rb
+
+
+# Add this line to our Gemfile (right below the Rails gem is fine)
+--------------------Gemfile
+gem 'bootstrap-sass', '~> 2.2.2.0'
+--------------------------------------------------------------------------------
+
+
+~/# bundle install
 
 
 --------------------app/views/layouts/application.html.erb
@@ -325,7 +352,7 @@ class User < ActiveRecord::Base
                 
   def encrypt_password
     self.salt ||= Digest::SHA256.hexdigest("--#{Time.now.to_s}- -#{email}--")
-    self.hashed_password ||= encrypt(password)
+    self.hashed_password = encrypt(password)
   end
 
   def encrypt(raw_password)
@@ -358,7 +385,7 @@ end
 ~/# bundle exec rspec
 
 
-add this field to the user form
+# add this field to the user form
 --------------------app/views/users/_form.html.erb
 <div class="field">
   <%= f.label :password %><br />
@@ -523,6 +550,20 @@ class User < ActiveRecord::Base
   end
   
   def self.authenticate(email, plain_text_password)
+    nil
   end
 end
 --------------------------------------------------------------------------------
+
+
+git status                    # see what we modified
+git add -A                    # add all the changes
+git commit -m "User model"
+
+
+git checkout master           # merge it back into master
+git merge bootstrap
+
+git push origin master            # github
+git push heroku master            # heroku
+heroku run rake db:migrate        # apply database migrations to production
