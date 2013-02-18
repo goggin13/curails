@@ -44,7 +44,9 @@
     
 5:
   title: "Signing in / Signing out"
-  published: false
+  published: true
+  links:
+    "Module Tutorial": "http://www.ruby-doc.org/docs/ProgrammingRuby/html/tut_modules.html"
 
 6:
   title: "Microposts"
