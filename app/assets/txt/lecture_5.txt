@@ -1,5 +1,41 @@
 
---------- spec/requests/session_spec.rb
+# Add this line to your config/routes.rb file
+--------------------config/routes.rb
+resources :sessions, only: [:new, :create, :destroy]
+--------------------------------------------------------------------------------
+
+
+--------------------spec/controllers/sessions_controller.rb
+class SessionsController < ApplicationController
+
+  def new
+  end
+
+  def create
+  end
+
+  def destroy
+  end
+
+end
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/sessions/new.html.erb
+<% provide(:title, 'Login') %>
+
+<div class='row'>
+  <div class='span12'>
+    <h1>Login</h1>
+    
+    <p>Your login form will go here</p>
+
+  </div>
+</div>
+--------------------------------------------------------------------------------
+
+
+--------------------spec/requests/session_spec.rb
 require 'spec_helper'
 
 describe "Session Requests" do
@@ -12,7 +48,7 @@ describe "Session Requests" do
     
     describe "link" do
   
-      it "should be linked to from the header" do
+      it "should be displayed in the header" do
         visit root_path
         page.should have_link("Login", href: new_session_path)
       end
@@ -170,6 +206,44 @@ end
 ---------------------------------------------------------------
 
 
+~/# bundle exec rspec spec/requests/session_spec.rb -e "login form link should be displayed in the header"
+
+
+~/# bundle exec rspec spec/requests/session_spec.rb -e "login form elements"
+
+
+----------app/views/layouts/application.html.erb
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= full_title(yield(:title)) %></title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+  <%= render 'layouts/header' %>
+
+  <div class="container"> 
+
+    <% flash.each do |key, value| %>
+      <div class="alert alert-<%= key %>"><%= value %></div>
+    <% end %> 
+
+    <%= yield %>
+    <hr />
+    <%= render 'layouts/footer' %>
+  </div>
+
+</body>
+</html>
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/session_spec.rb -e "login form submission"
+
+
 ----------app/helpers/session_helper.rb
 module SessionHelper
   
@@ -187,7 +261,7 @@ module SessionHelper
   end
   
   def current_user
-    @current_user ||= User.find_by_id(cookies[:user_id])
+    @current_user ||= User.find_by_id(cookies[:current_user_id])
   end
 
   def signed_in?
@@ -195,3 +269,19 @@ module SessionHelper
   end
 end
 ---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/session_spec.rb -e "customized header"
+~/# bundle exec rspec spec/requests/sessions_spec.rb -e "logging out"
+~/# bundle exec rspec 
+
+
+~/# git status                            # see what we modified
+~/# git add -A                            # add all the changes
+~/# git commit -m "authentication"
+
+~/# git checkout master                   # merge it back into master
+~/# git merge login
+
+~/# git push origin master                # github
+~/# git push heroku master                # heroku
