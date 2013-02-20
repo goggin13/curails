@@ -11,42 +11,6 @@ end
 --------------------------------------------------------------------------------  
 
 
-# Add this line to your config/routes.rb file
---------------------config/routes.rb
-resources :sessions, only: [:new, :create, :destroy]
---------------------------------------------------------------------------------
-
-
---------------------spec/controllers/sessions_controller.rb
-class SessionsController < ApplicationController
-
-  def new
-  end
-
-  def create
-  end
-
-  def destroy
-  end
-
-end
---------------------------------------------------------------------------------
-
-
---------------------app/views/sessions/new.html.erb
-<% provide(:title, 'Login') %>
-
-<div class='row'>
-  <div class='span12'>
-    <h1>Login</h1>
-    
-    <p>Your login form will go here</p>
-
-  </div>
-</div>
---------------------------------------------------------------------------------
-
-
 --------------------spec/requests/session_spec.rb
 require 'spec_helper'
 
@@ -56,7 +20,7 @@ describe "Session Requests" do
     @user = User.create! name: "Matt", email: "goggin13@gmail.com", password: "foobar"
   end
 
-  describe "Login form" do
+  describe "login form" do
     
     describe "link" do
   
@@ -218,6 +182,42 @@ end
 ---------------------------------------------------------------
 
 
+# Add this line to your config/routes.rb file
+--------------------config/routes.rb
+resources :sessions, only: [:new, :create, :destroy]
+--------------------------------------------------------------------------------
+
+
+--------------------app/controllers/sessions_controller.rb
+class SessionsController < ApplicationController
+
+  def new
+  end
+
+  def create
+  end
+
+  def destroy
+  end
+
+end
+--------------------------------------------------------------------------------
+
+
+--------------------app/views/sessions/new.html.erb
+<% provide(:title, 'Login') %>
+
+<div class='row'>
+  <div class='span12'>
+    <h1>Login</h1>
+    
+    <p>Your login form will go here</p>
+
+  </div>
+</div>
+--------------------------------------------------------------------------------
+
+
 ~/# bundle exec rspec spec/requests/session_spec.rb -e "login form link should be displayed in the header"
 
 
@@ -283,8 +283,16 @@ end
 ---------------------------------------------------------------
 
 
+----------app/controllers/application_controller.rb
+class ApplicationController < ActionController::Base
+  protect_from_forgery
+  include SessionHelper
+end
+---------------------------------------------------------------
+
+
 ~/# bundle exec rspec spec/requests/session_spec.rb -e "customized header"
-~/# bundle exec rspec spec/requests/sessions_spec.rb -e "logging out"
+~/# bundle exec rspec spec/requests/session_spec.rb -e "logging out"
 ~/# bundle exec rspec 
 
 
