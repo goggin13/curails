@@ -43,10 +43,11 @@
     "Ruby strftime": "http://www.ruby-doc.org/core-1.9.3/Time.html#method-i-strftime"
     
 5:
-  title: "Signing in / Signing out"
+  title: "Signing in / Signing out && Customizations"
   published: true
   links:
     "Module Tutorial": "http://www.ruby-doc.org/docs/ProgrammingRuby/html/tut_modules.html"
+    "Devise Authentication": "https://github.com/plataformatec/devise"
 
 6:
   title: "Microposts"

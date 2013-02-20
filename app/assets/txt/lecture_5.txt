@@ -1,4 +1,16 @@
 
+--------------------My solution to User.authenticate
+def has_password?(raw_password)
+  hashed_password == encrypt(raw_password)
+end
+
+def self.authenticate(email, plain_text_password)
+  user = User.find_by_email(email)
+  user && user.has_password?(plain_text_password) ? user : nil
+end
+--------------------------------------------------------------------------------  
+
+
 # Add this line to your config/routes.rb file
 --------------------config/routes.rb
 resources :sessions, only: [:new, :create, :destroy]
@@ -248,7 +260,7 @@ end
 module SessionHelper
   
   def sign_in(user)
-    cookies.permanent[:current_user_id] = user.id
+    cookies[:current_user_id] = user.id
     self.current_user = user
   end
 
