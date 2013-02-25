@@ -1,0 +1,222 @@
+
+~/# git status                        # should display nothing to commit
+~/# git checkout -b access_control    # checkout a new branch
+~/# git branch                        # view branches
+
+
+~/# bundle exec rspec spec/requests/session_spec.rb -e "logging out"
+
+
+# Add this function to session_helper.rb
+----------app/helpers/session_helper.rb
+def redirect_home_if_signed_in
+  redirect_to root_path if signed_in?
+end
+---------------------------------------------------------------
+
+
+# Add to the top of SessionController
+----------app/controllers/sessions_controller.rb
+before_filter :redirect_home_if_signed_in, only: [:new, :create]
+---------------------------------------------------------------
+
+
+# Add to the top of UserController
+----------app/controllers/users_controller.rb
+before_filter :redirect_home_if_signed_in, only: [:new, :create]
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "login form"
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "registration form"
+
+
+# Add to the bottom of UserController
+----------app/controllers/users_controller.rb
+private 
+  def redirect_unless_authorized
+    @user = User.find(params[:id])
+    # Write some code here that redirects home 
+    # and displays an error message "You are not authorized
+    # to edit that user" if the current_user is not equal to @user
+  end
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "user access control"
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "micropost access control"
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "users link"
+
+
+# Add to gemfile
+----------Gemfile
+gem 'faker'
+---------------------------------------------------------------
+
+
+~/# bundle install
+(if you are running your server 'rails s' in a different terminal, you will
+need to stop and restart it)
+
+
+----------lib/tasks/sample_data.rake
+namespace :db do
+  desc "Fill database with sample data"
+  task populate: :environment do
+    User.create!(name: "Matt",
+                 email: "goggin13@gmail.com",
+                 password: "password")
+
+    99.times do |n|
+      user = User.create!(name: Faker::Name.name,
+                                email: Faker::Internet.email,
+                                password: "password")
+      50.times do |i|
+        user.micro_posts.create! content: "hello, world - #{i}"
+      end
+    end
+  end
+end
+---------------------------------------------------------------
+
+
+~/# bundle exec rake db:reset
+~/# bundle exec rake db:populate
+~/# bundle exec rake db:test:prepare
+
+
+# Add to gemfile
+----------Gemfile
+gem 'will_paginate'
+gem 'bootstrap-will_paginate'
+---------------------------------------------------------------
+
+
+~/# bundle install
+(if you are running your server 'rails s' in a different terminal, you will
+need to stop and restart it)
+
+
+----------app/controllers/users_controller.rb
+def index
+  @users = User.paginate(page: params[:page])
+
+  respond_to do |format|
+    format.html # index.html.erb
+    format.json { render json: @users }
+  end
+end
+---------------------------------------------------------------
+
+
+----------app/views/users/index.html.rb
+<h1>Listing users</h1>
+
+<%= will_paginate @users %>
+
+<table>
+
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= user.name %></td>
+      <td><%= user.email %></td>
+      <td><%= link_to 'Show', user %></td>
+      <td><%= link_to 'Edit', edit_user_path(user) %></td>
+      <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  
+</table>
+
+<%= will_paginate @users %>
+
+<br />
+
+<%= link_to 'New User', new_user_path %>
+---------------------------------------------------------------
+
+
+~/# sudo yum install pecl make ImageMagick ImageMagick-devel gcc re2c
+
+
+# Add to gemfile
+----------Gemfile
+gem 'paperclip', '~> 3.0'
+---------------------------------------------------------------
+
+
+~/# bundle install
+(if you are running your server 'rails s' in a different terminal, you will
+need to stop and restart it)
+
+~/# rails generate paperclip user avatar
+~/# bundle exec rake db:migrate
+~/# bundle exec rake db:test:prepare
+
+
+# Add to development.rb
+----------config/environments/development.rb
+Paperclip.options[:command_path] = "/usr/bin/"
+---------------------------------------------------------------
+
+
+# Update user.rb
+----------app/models/user.rb
+attr_accessible :email, :name, :password, :avatar
+has_attached_file :avatar, 
+                  :styles => { 
+                    :medium => "300x300>", 
+                    :thumb => "100x100>" 
+                  }, 
+                  :default_url => "/assets/:style/missing.png"
+---------------------------------------------------------------
+
+
+----------app/views/users/_form.html.erb
+<%= f.file_field :avatar %>
+---------------------------------------------------------------
+
+
+----------app/views/user/show.html.erb
+<%= image_tag @user.avatar.url(:medium) %>
+---------------------------------------------------------------
+
+
+----------app/views/user/index.html.erb
+<%= image_tag @user.avatar.url(:thumb) %>
+---------------------------------------------------------------
+
+
+# Run these commands to download some default avatars I've prepped for you
+mkdir app/assets/images/medium
+curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/medium/missing.png -o app/assets/images/medium/missing.png
+
+mkdir app/assets/images/original
+curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/original/missing.png -o app/assets/images/original/missing.png
+
+mkdir app/assets/images/thumb
+curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/thumb/missing.png -o app/assets/images/thumb/missing.png
+
+
+~/# git status                            # see what we modified
+~/# git add -A                            # add all the changes
+~/# git commit -m "access control, avatars, and faker"
+
+
+~/# git checkout master                   # merge it back into master
+~/# git merge access_control
+
+~/# git push origin master                # github
+~/# git push heroku master                # heroku
+
+# optional; run our Faker dummy data script against our Heroku database
+~/# heroku run rake db:reset
+~/# heroku run rake db:populate

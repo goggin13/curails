@@ -43,7 +43,7 @@
     "Ruby strftime": "http://www.ruby-doc.org/core-1.9.3/Time.html#method-i-strftime"
     
 5:
-  title: "Signing in / Signing out && Customizations"
+  title: "Signing in && Customizations"
   published: true
   links:
     "Hartl chapter on authentication": "http://ruby.railstutorial.org/chapters/sign-in-sign-out#top"
@@ -53,11 +53,16 @@
     "link_to": "http://api.rubyonrails.org/classes/ActionView/Helpers/UrlHelper.html#method-i-link_to"
 
 6:
-  title: "Microposts"
-  published: false
+  title: "Signing out && Access Control && Gems"
+  published: true
+  links:
+    "faker": "http://faker.rubyforge.org/"
+    "will_paginate": "https://github.com/mislav/will_paginate"
+    "paperclip": "https://github.com/thoughtbot/paperclip"
+    "ImageMagick": "http://www.imagemagick.org/script/index.php"
 
 7:
-  title: "More User Pages"
+  title: "Building a feed"
   published: false
 
 8:
