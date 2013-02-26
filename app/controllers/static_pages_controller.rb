@@ -4,7 +4,7 @@ class StaticPagesController < ApplicationController
   end
   
   def syllabus
-    config = "#{Rails.root.to_s}/config/syllabus.ymL"
+    config = "#{Rails.root.to_s}/config/syllabus.yml"
     yml = YAML.load(ERB.new(File.read(config)).result)
     @courses = HashWithIndifferentAccess.new(yml)
   end
