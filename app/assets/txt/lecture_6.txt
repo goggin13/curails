@@ -197,6 +197,9 @@ has_attached_file :avatar,
 ---------------------------------------------------------------
 
 
+bundle exec rspec spec/requests/lecture_6_spec.rb -e "paperclip"
+
+
 # Run these commands to download some default avatars I've prepped for you
 mkdir app/assets/images/medium
 curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/medium/missing.png -o app/assets/images/medium/missing.png
@@ -206,6 +209,7 @@ curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/orig
 
 mkdir app/assets/images/thumb
 curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/thumb/missing.png -o app/assets/images/thumb/missing.png
+
 
 
 ~/# git status                            # see what we modified
