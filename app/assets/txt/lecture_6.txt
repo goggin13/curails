@@ -6,7 +6,6 @@
 
 ~/# bundle exec rspec spec/requests/session_spec.rb -e "logging out"
 
-
 # Add this function to session_helper.rb
 ----------app/helpers/session_helper.rb
 def redirect_home_if_signed_in
@@ -143,6 +142,9 @@ end
 <%= link_to 'New User', new_user_path %>
 ---------------------------------------------------------------
 
+
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "paginating users"
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "paginating micro_posts"
 
 ~/# sudo yum install pecl make ImageMagick ImageMagick-devel gcc re2c
 
