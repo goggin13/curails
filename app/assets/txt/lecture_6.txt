@@ -66,11 +66,12 @@ namespace :db do
                  email: "goggin13@gmail.com",
                  password: "password")
 
-    99.times do |n|
+    70.times do |n|
       user = User.create!(name: Faker::Name.name,
                                 email: Faker::Internet.email,
                                 password: "password")
-      50.times do |i|
+      puts "Created new user, #{user.name}, #{n+1} / 70"
+      25.times do |i|
         user.micro_posts.create! content: "hello, world - #{i}"
       end
     end
@@ -193,7 +194,7 @@ has_attached_file :avatar,
 
 
 ----------app/views/user/index.html.erb
-<%= image_tag @user.avatar.url(:thumb) %>
+<%= image_tag user.avatar.url(:thumb) %>
 ---------------------------------------------------------------
 
 
