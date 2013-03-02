@@ -58,20 +58,24 @@
   links:
     "lecture_6_spec.rb": 'https://raw.github.com/goggin13/curails-mg343/master/spec/requests/lecture_6_spec.rb'
     "faker": "http://faker.rubyforge.org/"
+
+7:
+  title: "Pagination && AJAX && Avatars"
+  published: true
+  links: 
+    "lecture_7_spec.rb": "https://raw.github.com/goggin13/curails-mg343/master/spec/requests/lecture_7_spec.rb"
     "will_paginate": "https://github.com/mislav/will_paginate"
+    "Ajax in Rails blog entry": "http://blog.madebydna.com/all/code/2011/12/05/ajax-in-rails-3.html"
+    "Rails 4": "http://blog.madebydna.com/all/code/2011/12/05/ajax-in-rails-3.html"
     "paperclip": "https://github.com/thoughtbot/paperclip"
     "ImageMagick": "http://www.imagemagick.org/script/index.php"
 
-7:
-  title: "Building a feed"
-  published: false
-
 8:
-  title: "Following Users"
+  title: "Building the feed"
   published: false
 
 9:
-  title: "Stress Testing && Tools"
+  title: "Heroku addons && Stress Testing && Tools"
   published: false
 
 10: 

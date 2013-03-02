@@ -1,0 +1,294 @@
+
+~/# git status                        # should display nothing to commit
+~/# git checkout -b pagination        # checkout a new branch
+~/# git branch                        # view branches
+
+
+# Add to gemfile
+----------Gemfile
+gem 'will_paginate'
+gem 'bootstrap-will_paginate'
+---------------------------------------------------------------
+
+
+~/# bundle install
+(if you are running your server 'rails s' in a different terminal, you will
+need to stop and restart it)
+
+
+----------app/controllers/users_controller.rb
+def index
+  @users = User.paginate(page: params[:page])
+
+  respond_to do |format|
+    format.html # index.html.erb
+    format.json { render json: @users }
+  end
+end
+---------------------------------------------------------------
+
+
+----------app/views/users/index.html.rb
+<h1>Listing users</h1>
+
+<%= will_paginate @users %>
+
+<table>
+
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= user.name %></td>
+      <td><%= user.email %></td>
+      <td><%= link_to 'Show', user %></td>
+      <td><%= link_to 'Edit', edit_user_path(user) %></td>
+      <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  
+</table>
+
+<%= will_paginate @users %>
+
+<br />
+
+<%= link_to 'New User', new_user_path %>
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "paginating users"
+~/# bundle exec rspec spec/requests/lecture_6_spec.rb -e "paginating micro_posts"
+
+
+# Add the feed function the user model
+----------app/models/user.rb
+def feed(paginate_options={page: 1})
+  micro_posts.paginate(paginate_options)
+end
+---------------------------------------------------------------
+
+
+# Update the home function for the StaticPagesController
+----------app/controllers/static_pages_controller.rb
+def home
+  if signed_in?
+    @feed = current_user.feed page: params[:page]
+  end
+end
+---------------------------------------------------------------
+
+
+# Add the paginated feed to home.html.erb
+----------app/views/static_pages/home.html.erb
+<% provide(:title, 'Home') %>
+<div class="hero-unit">
+  <h1>INFO 2310 MicroPoster</h1>
+  <p>
+    This is a sample website used in INFO 2310 to learn Ruby on Rails.  Please
+    sign up and share your thoughts with us in 5-140 character chunks.
+  </p>
+  
+  <% if signed_in? %>
+    <%= will_paginate @feed %>
+    <div id="user_feed">
+      <%= render @feed %>
+    </div>
+    <%= will_paginate @feed %>
+  <% else %>
+  	<p>
+  		<%= link_to 'Sign Up', new_user_path, class: 'btn btn-primary btn-large' %>
+  	</p>
+  <% end %>
+
+</div>
+---------------------------------------------------------------
+
+
+# REMOVE these lines from the MicroPost form
+----------app/views/micro_posts/_form.html.erb
+<div class="field">
+  <%= f.label :user_id %><br />
+  <%= f.number_field :user_id %>
+</div>
+---------------------------------------------------------------
+
+
+# Change the line in the create function in MicroPostsController from
+# @micro_post = MicroPost.build(params[:micro_post])
+# to
+----------app/controllers/micro_posts_controller.rb
+@micro_post = current_user.micro_posts.build(params[:micro_post])
+---------------------------------------------------------------
+
+
+# Render the form partial on the home page
+# Put the form right above the user feed logic
+----------app/views/static_pages/home.html.erb
+  <% if signed_in? %>
+    
+    <%= render 'micro_posts/form' %>
+    
+    <%= will_paginate @feed %>
+    <div id="user_feed">
+      <%= render @feed %>
+    </div>
+    <%= will_paginate @feed %>
+---------------------------------------------------------------
+
+
+# Add an @micro_post variable for our home page
+----------app/controllers/static_pages_controller.b
+def home
+  if signed_in?
+    @micro_post = MicroPost.new
+    @feed = current_user.feed page: params[:page]
+  end
+end
+---------------------------------------------------------------
+
+
+# Update the MicroPost form_for call from
+# <%= form_for(@micro_post) do |f| %>
+# to
+----------app/views/micro_posts/_form.html.erb
+<%= form_for(@micro_post, remote: true) do |f| %>
+---------------------------------------------------------------
+
+
+# Add calls to render the script type in our MicroPostsController
+----------app/controllers/micro_posts_controller.rb
+def create
+  @micro_post = current_user.micro_posts.build(params[:micro_post])
+
+  respond_to do |format|
+    if @micro_post.save
+      format.html { redirect_to @micro_post, notice: 'Micro post was successfully created.' }
+      format.json { render json: @micro_post, status: :created, location: @micro_post }
+      format.js { render :partial => "micro_posts/show"  }
+    else
+      format.html { render action: "new" }
+      format.json { render json: @micro_post.errors, status: :unprocessable_entity }
+      format.js { render :partial => "micro_posts/errors"  }
+    end
+  end
+end
+---------------------------------------------------------------
+
+
+# The JS partial for showing a micropost
+----------app/views/micro_posts/_show.js.erb
+// Get the HTML for a rendered MicroPost
+var html = '<%= j(render(:partial => "micro_post", :object => @micro_post))%>';
+
+// create a JQuery DOM element we can insert (and hide it so we can fade it in)
+var element = $(html).hide();
+
+// Add it to the user feed, and then fade it in
+$('#user_feed').prepend(element);
+element.fadeIn(1000);
+
+// Reset the post input to empty
+$('#new_micro_post input[type="text"]').val('');
+---------------------------------------------------------------
+
+
+# The JS partial for errors when creating a micropost
+----------app/views/micro_posts/_errors.js.erb
+var errors = $('<div class="alert alert-error"/>');
+
+<% @micro_post.errors.full_messages.each do |error| %>
+  errors.append('<p><%= j(error) %></p>');
+<% end %>
+
+// Display errors before the form
+$('#new_micro_post').prepend(errors);
+errors.fadeOut(3000);
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/lecture_7_spec.rb -e "posting from the home page"
+
+
+~/# sudo yum install pecl make ImageMagick ImageMagick-devel gcc re2c
+
+
+# Add to gemfile
+----------Gemfile
+gem 'paperclip', '~> 3.0'
+---------------------------------------------------------------
+
+
+~/# bundle install
+(if you are running your server 'rails s' in a different terminal, you will
+need to stop and restart it)
+
+~/# rails generate paperclip user avatar
+~/# bundle exec rake db:migrate
+~/# bundle exec rake db:test:prepare
+
+
+# Add to development.rb
+----------config/environments/development.rb
+Paperclip.options[:command_path] = "/usr/bin/"
+---------------------------------------------------------------
+
+
+# Update user.rb
+----------app/models/user.rb
+attr_accessible :email, :name, :password, :avatar
+has_attached_file :avatar, 
+                  :styles => { 
+                    :medium => "300x300>", 
+                    :thumb => "100x100>" 
+                  }, 
+                  :default_url => "/assets/:style/missing.png"
+---------------------------------------------------------------
+
+
+----------app/views/users/_form.html.erb
+<%= f.file_field :avatar %>
+---------------------------------------------------------------
+
+
+----------app/views/user/show.html.erb
+<%= image_tag @user.avatar.url(:medium) %>
+---------------------------------------------------------------
+
+
+----------app/views/user/index.html.erb
+<%= image_tag user.avatar.url(:thumb) %>
+---------------------------------------------------------------
+
+
+bundle exec rspec spec/requests/lecture_6_spec.rb -e "paperclip"
+
+
+# Run these commands to download some default avatars I've prepped for you
+mkdir app/assets/images/medium
+curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/medium/missing.png -o app/assets/images/medium/missing.png
+
+mkdir app/assets/images/original
+curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/original/missing.png -o app/assets/images/original/missing.png
+
+mkdir app/assets/images/thumb
+curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/thumb/missing.png -o app/assets/images/thumb/missing.png
+
+
+
+~/# git status                            # see what we modified
+~/# git add -A                            # add all the changes
+~/# git commit -m "access control, avatars, and faker"
+
+
+~/# git checkout master                   # merge it back into master
+~/# git merge access_control
+
+~/# git push origin master                # github
+~/# git push heroku master                # heroku
