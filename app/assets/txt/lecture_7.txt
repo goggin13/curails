@@ -102,9 +102,9 @@ end
     </div>
     <%= will_paginate @feed %>
   <% else %>
-  	<p>
-  		<%= link_to 'Sign Up', new_user_path, class: 'btn btn-primary btn-large' %>
-  	</p>
+    <p>
+      <%= link_to 'Sign Up', new_user_path, class: 'btn btn-primary btn-large' %>
+    </p>
   <% end %>
 
 </div>
@@ -214,81 +214,16 @@ errors.fadeOut(3000);
 
 
 ~/# bundle exec rspec spec/requests/lecture_7_spec.rb -e "posting from the home page"
+~/# bundle exec rspec spec/requests/lecture_7_spec.rb -e "deleting micro_posts"
 
 
-~/# sudo yum install pecl make ImageMagick ImageMagick-devel gcc re2c
+~/# git status                  # see what we modified
+~/# git add -A                  # add all the changes
+~/# git commit -m "pagination"
 
 
-# Add to gemfile
-----------Gemfile
-gem 'paperclip', '~> 3.0'
----------------------------------------------------------------
+~/# git checkout master         # merge it back into master
+~/# git merge pagination
 
-
-~/# bundle install
-(if you are running your server 'rails s' in a different terminal, you will
-need to stop and restart it)
-
-~/# rails generate paperclip user avatar
-~/# bundle exec rake db:migrate
-~/# bundle exec rake db:test:prepare
-
-
-# Add to development.rb
-----------config/environments/development.rb
-Paperclip.options[:command_path] = "/usr/bin/"
----------------------------------------------------------------
-
-
-# Update user.rb
-----------app/models/user.rb
-attr_accessible :email, :name, :password, :avatar
-has_attached_file :avatar, 
-                  :styles => { 
-                    :medium => "300x300>", 
-                    :thumb => "100x100>" 
-                  }, 
-                  :default_url => "/assets/:style/missing.png"
----------------------------------------------------------------
-
-
-----------app/views/users/_form.html.erb
-<%= f.file_field :avatar %>
----------------------------------------------------------------
-
-
-----------app/views/user/show.html.erb
-<%= image_tag @user.avatar.url(:medium) %>
----------------------------------------------------------------
-
-
-----------app/views/user/index.html.erb
-<%= image_tag user.avatar.url(:thumb) %>
----------------------------------------------------------------
-
-
-bundle exec rspec spec/requests/lecture_6_spec.rb -e "paperclip"
-
-
-# Run these commands to download some default avatars I've prepped for you
-mkdir app/assets/images/medium
-curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/medium/missing.png -o app/assets/images/medium/missing.png
-
-mkdir app/assets/images/original
-curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/original/missing.png -o app/assets/images/original/missing.png
-
-mkdir app/assets/images/thumb
-curl https://raw.github.com/goggin13/curails-mg343/master/app/assets/images/thumb/missing.png -o app/assets/images/thumb/missing.png
-
-
-
-~/# git status                            # see what we modified
-~/# git add -A                            # add all the changes
-~/# git commit -m "access control, avatars, and faker"
-
-
-~/# git checkout master                   # merge it back into master
-~/# git merge access_control
-
-~/# git push origin master                # github
-~/# git push heroku master                # heroku
+~/# git push origin master      # github
+~/# git push heroku master      # heroku
