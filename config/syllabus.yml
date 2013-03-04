@@ -67,12 +67,13 @@
     "will_paginate": "https://github.com/mislav/will_paginate"
     "Ajax in Rails blog entry": "http://blog.madebydna.com/all/code/2011/12/05/ajax-in-rails-3.html"
     "Rails 4": "http://blog.madebydna.com/all/code/2011/12/05/ajax-in-rails-3.html"
-    "paperclip": "https://github.com/thoughtbot/paperclip"
-    "ImageMagick": "http://www.imagemagick.org/script/index.php"
-
+    
 8:
   title: "Building the feed"
   published: false
+  link:
+    "paperclip": "https://github.com/thoughtbot/paperclip"
+    "ImageMagick": "http://www.imagemagick.org/script/index.php"
 
 9:
   title: "Heroku addons && Stress Testing && Tools"
