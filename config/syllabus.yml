@@ -67,6 +67,7 @@
     "will_paginate": "https://github.com/mislav/will_paginate"
     "Ajax in Rails blog entry": "http://blog.madebydna.com/all/code/2011/12/05/ajax-in-rails-3.html"
     "Rails 4": "http://blog.madebydna.com/all/code/2011/12/05/ajax-in-rails-3.html"
+    "Selenium": "http://docs.seleniumhq.org/"
     
 8:
   title: "Building the feed"
