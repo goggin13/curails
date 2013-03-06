@@ -1,0 +1,55 @@
+### Paginate User's MicroPosts
+
+# update the show function in app/controllers/users_controller.rb
+def show
+  @user = User.find(params[:id])
+  @micro_posts = @user.micro_posts.paginate(page: params[:page], per_page: 10)
+
+  respond_to do |format|
+    format.html # show.html.erb
+    format.json { render json: @user }
+  end
+end
+
+
+# update the show view in app/views/show.html.erb
+<%= will_paginate @micro_posts %>
+<%= render @micro_posts %>
+<%= will_paginate @micro_posts %>
+
+
+
+
+### Delete MicroPosts with AJAX
+
+# update the MicroPost parial at app/views/micro_posts/_partial.html.erb
+<p id="micro_post_<%= micro_post.id %>">
+  <span class='micro_post_timestamp'>
+     <%= micro_post.created_at.strftime("%m/%d %l-%M") %>
+   </span> 
+   <%= micro_post.content %>
+   
+   <% if signed_in? && micro_post.user == current_user %>
+	   <%= link_to 'Destroy', 
+					micro_post, 
+					method: :delete, 
+					data: { confirm: 'Are you sure?' },
+					remote: true %>
+   <% end %>
+   
+</p>
+
+# create app/views/micro_posts/_destroy.js.erb
+$("#micro_post_<%= @micro_post.id %>").fadeOut();
+
+# update the destroy function in app/controllers/micro_posts_controller.rb
+def destroy
+  @micro_post = MicroPost.find(params[:id])
+  @micro_post.destroy
+
+  respond_to do |format|
+    format.html { redirect_to micro_posts_url }
+    format.json { head :no_content }
+    format.js { render partial: 'micro_posts/destroy' }
+  end
+end

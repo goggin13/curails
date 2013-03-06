@@ -24,6 +24,12 @@
              <% (course[:links] || []).each do |title, link| %>
                <li><%= link_to title, link, :target => '_blank' %></li>
              <% end %>
+              
+              <% if week == 7 %>
+                <li>
+                  <%= link_to 'solutions', asset_path('lecture_7_solutions.txt'), :target => '_blank' %>
+                </li>
+              <% end %>
 
           </ul>
         <% end %>
