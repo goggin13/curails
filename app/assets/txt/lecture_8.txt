@@ -1,0 +1,236 @@
+~/# git status                  # should display nothing to commit
+~/# git checkout -b following   # checkout a new branch
+~/# git branch                  # view branches
+
+
+~/# rails generate model Relationship follower_id:integer followed_id:integer
+
+
+----------db/migrate/<timestamp>_create_relationships.rb
+class CreateRelationships < ActiveRecord::Migration
+  def change
+    create_table :relationships do |t|
+      t.integer :follower_id
+      t.integer :followed_id
+
+      t.timestamps
+    end
+    
+    add_index :relationships, :follower_id
+    add_index :relationships, :followed_id
+    add_index :relationships, [:followed_id, :follower_id], unique: true
+  end
+end
+---------------------------------------------------------------
+
+
+~/# bundle exec rake db:migrate
+~/# bundle exec rake db:test:prepare
+
+
+----------app/models/relationship.rb
+class Relationship < ActiveRecord::Base
+  attr_accessible :followed_id, :follower_id
+
+  belongs_to :follower, class_name: "User"
+  belongs_to :followed, class_name: "User"
+  
+  validates :follower_id, presence: true
+  validates :followed_id, presence: true
+  validates_uniqueness_of :follower_id, scope: :followed_id
+end
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/relationship_spec.rb
+
+
+# Add these lines to user.rb
+----------app/models/user.rb
+  has_many :relationships, foreign_key: "follower_id", dependent: :destroy
+  has_many :followed_users, through: :relationships, source: :followed
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb -e "relationships"
+
+
+# Add (and then implement) these functions to the user class
+----------app/models/user.rb
+  # Returns the Relationship object this user has with other_user
+  # or nil if no relationship exists
+  def following?(other_user)
+  end
+
+  # create a Relationship object where this user is following other_user
+  def follow!(other_user)
+  end
+
+  # destroy the Relationship object where this user is following other_user
+  def unfollow!(other_user)
+  end
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/models/user_spec.rb -e "following"
+
+
+----------app/views/relationships/_form.html.erb
+<% unless current_user == @user %>
+  <div id="follow_form">
+    <% if current_user.following?(@user) %>
+        <%= render 'unfollow' %>
+    <% else %>
+        <%= render 'follow' %>
+    <% end %>
+  </div>
+<% end %>
+---------------------------------------------------------------
+
+
+----------app/views/relationships/_follow.html.erb
+<%= form_for(current_user.relationships.build(followed_id: @user.id)) do |f| %>
+  <%= f.hidden_field :followed_id %>
+  <%= f.submit "Follow", class: "btn btn-large btn-primary" %>
+<% end %>
+---------------------------------------------------------------
+
+
+----------app/views/relationships/_unfollow.html.erb
+<%= form_for(current_user.relationships.find_by_followed_id(@user),
+             html: { method: :delete }) do |f| %>
+  <%= f.hidden_field :followed_id %>           
+  <%= f.submit "Unfollow", class: "btn btn-large" %>
+<% end %>
+---------------------------------------------------------------
+
+
+# Add to your routes file
+----------config/routes.rb
+resources :relationships, only: [:create, :destroy]
+---------------------------------------------------------------
+
+
+----------app/controllers/relationships_controller.rb
+class RelationshipsController < ApplicationController
+
+  def create
+    # params[:relationship][:followed_id] contains the id of the user to follow;
+    # use our functions from the previous exercise to have the current_user 
+    # follow them
+    respond_to do |format|
+      format.html { redirect_to @user }
+      format.js
+    end
+  end
+
+  def destroy
+    # params[:relationship][:followed_id] contains the id of the user to follow;
+    # use our functions from the previous exercise to have the current_user 
+    # UNfollow them
+    respond_to do |format|
+      format.html { redirect_to @user }
+      format.js
+    end
+  end
+end
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/relationships_spec.rb
+
+
+~/# bundle exec rspec spec/models/user_spec.rb -e "feed"
+
+
+# add to routes file; "resources :micro_posts" should already be in your file,
+# but ensure the refresh route appears BEFORE it
+----------config/routes.rb
+get '/micro_posts/refresh'  # this must come first
+resources :micro_posts
+---------------------------------------------------------------
+
+
+# Add a new function to your MicroPost controller
+----------app/controllers/micro_posts_controller.rb
+# GET /micro_posts/refresh?ids=[1,2,3,4,5] 
+def refresh
+  feed = current_user.feed(page: 1)
+  @new_micro_posts = feed.reject { |p| params[:ids].include?(p.id.to_s) }
+  respond_to do |format|
+    format.js
+  end
+end
+---------------------------------------------------------------
+
+
+# Rename 
+# app/assets/javascripts/micro_posts.js.coffee
+# =>
+# app/assets/javascripts/micro_posts.js
+----------app/assets/javascripts/micro_posts.js
+// Don't start refreshing unless we are on the home page
+if (window.location.pathname === '/static_pages/home'
+    || window.location.pathname === '/') {
+  
+  // function we will call regularly to update the feed
+  var refresh_micro_posts = function () {
+    
+    // return immediately if we aren't on the first page of results
+    var query_string = window.location.search;
+    if (query_string.indexOf("page=") > -1
+        && query_string.indexOf("page=1") === -1) {
+      return;
+    }
+    
+    // Retrieve the set of post ids currently visible from the home page
+    var post_ids = [];
+    $('#user_feed p').each(function (i, p) {
+      // each id looks like "micro_post_1234"; we just want the number
+      // so we split it up and take the part we need
+      var post_id = parseInt(p.id.split("_")[2]);
+      post_ids.push(post_id);
+    });
+    
+    // Issue the AJAX request; the JavaScript generated by the server
+    // will be evaluated, inserting new posts into the page (if necessary)
+    $.ajax({
+      dataType: 'script',
+      url: '/micro_posts/refresh',
+      data: {
+        ids: post_ids
+      }
+    });
+  };
+  
+  
+  // Begin polling our server every 5 seconds for fresh MicroPosts
+  setInterval(refresh_micro_posts, 5000);
+}
+---------------------------------------------------------------
+
+
+# You can use this command in your Rails console to create new posts 
+# from people you are following
+
+~/# rails c
+User.find_by_email('goggin13@gmail.com') \
+    .relationships  \
+    .first  \
+    .followed \
+    .micro_posts \
+    .create! content: "Do you love chaining too?"
+
+
+~/# git status                      # see what we modified
+~/# git add -A                      # add all the changes
+~/# git commit -m "authentication"
+
+~/# git checkout master             # merge it back into master
+~/# git merge following-users
+
+~/# git push origin master          # github
+~/# git push heroku master          # heroku
+
+# execute this command and follow the instructions closely
+~/# for i in {1..10}; do echo 'have a great Spring break!!!'; done
