@@ -73,6 +73,7 @@
   title: "Building the feed"
   published: true
   links:
+    "survey": "https://docs.google.com/forms/d/1ucc5yN7KrY4dPLgq1qYTTTud4yCMOxSGpQYoG3TE070/viewform"
     "spec/requests/relationship_spec.rb": "https://raw.github.com/goggin13/curails-mg343/master/spec/requests/relationships_spec.rb"
     "spec/models/user_spec.rb": "https://raw.github.com/goggin13/curails-mg343/master/spec/models/user_spec.rb"
     "spec/models/relationship_spec.rb": "https://raw.github.com/goggin13/curails-mg343/master/spec/models/relationship_spec.rb"
