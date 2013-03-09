@@ -71,14 +71,18 @@
     
 8:
   title: "Building the feed"
-  published: false
-  link:
-    "paperclip": "https://github.com/thoughtbot/paperclip"
-    "ImageMagick": "http://www.imagemagick.org/script/index.php"
+  published: true
+  links:
+    "spec/requests/relationship_spec.rb": "https://raw.github.com/goggin13/curails-mg343/master/spec/requests/relationships_spec.rb"
+    "spec/models/user_spec.rb": "https://raw.github.com/goggin13/curails-mg343/master/spec/models/user_spec.rb"
+    "spec/models/relationship_spec.rb": "https://raw.github.com/goggin13/curails-mg343/master/spec/models/relationship_spec.rb"
 
 9:
-  title: "Heroku addons && Stress Testing && Tools"
+  title: "TBD"
   published: false
+  links:
+    "paperclip": "https://github.com/thoughtbot/paperclip"
+    "ImageMagick": "http://www.imagemagick.org/script/index.php"
 
 10: 
   title: "TBD"
