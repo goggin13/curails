@@ -137,7 +137,7 @@ end
 ---------------------------------------------------------------
 
 
-~/# bundle exec rspec spec/requests/relationships_spec.rb
+~/# bundle exec rspec spec/requests/relationship_spec.rb
 
 
 ~/# bundle exec rspec spec/models/user_spec.rb -e "feed"
