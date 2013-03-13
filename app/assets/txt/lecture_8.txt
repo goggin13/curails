@@ -32,12 +32,12 @@ end
 class Relationship < ActiveRecord::Base
   attr_accessible :followed_id, :follower_id
 
+  validates :followed_id, presence: true
+  validates :follower_id, presence: true,
+                          uniqueness: { scope: :followed_id }
+
   belongs_to :follower, class_name: "User"
   belongs_to :followed, class_name: "User"
-  
-  validates :follower_id, presence: true
-  validates :followed_id, presence: true
-  validates_uniqueness_of :follower_id, scope: :followed_id
 end
 ---------------------------------------------------------------
 
@@ -75,7 +75,7 @@ end
 ~/# bundle exec rspec spec/models/user_spec.rb -e "following"
 
 
-----------app/views/relationships/_form.html.erb
+----------app/views/users/_form.html.erb
 <% unless current_user == @user %>
   <div id="follow_form">
     <% if current_user.following?(@user) %>
@@ -88,7 +88,7 @@ end
 ---------------------------------------------------------------
 
 
-----------app/views/relationships/_follow.html.erb
+----------app/views/users/_follow_form.html.erb
 <%= form_for(current_user.relationships.build(followed_id: @user.id)) do |f| %>
   <%= f.hidden_field :followed_id %>
   <%= f.submit "Follow", class: "btn btn-large btn-primary" %>
@@ -96,7 +96,7 @@ end
 ---------------------------------------------------------------
 
 
-----------app/views/relationships/_unfollow.html.erb
+----------app/views/users/_unfollow.html.erb
 <%= form_for(current_user.relationships.find_by_followed_id(@user),
              html: { method: :delete }) do |f| %>
   <%= f.hidden_field :followed_id %>           
@@ -114,30 +114,39 @@ resources :relationships, only: [:create, :destroy]
 ----------app/controllers/relationships_controller.rb
 class RelationshipsController < ApplicationController
 
-  def create
-    # params[:relationship][:followed_id] contains the id of the user to follow;
-    # use our functions from the previous exercise to have the current_user 
-    # follow them
-    respond_to do |format|
-      format.html { redirect_to @user }
-      format.js
-    end
-  end
+	# params[:relationship][:followed_id] contains the id of the user to follow;
+	# use our functions from the last exercise to have the current_user follow them
+	def create
+		# your code here, populate the @user variable and make the current_user follow them
+		
+		respond_to do |format|
+			format.html { redirect_to @user }
+			format.js
+		end
+	end
 
-  def destroy
-    # params[:relationship][:followed_id] contains the id of the user to follow;
-    # use our functions from the previous exercise to have the current_user 
-    # UNfollow them
-    respond_to do |format|
-      format.html { redirect_to @user }
-      format.js
-    end
-  end
+	# params[:relationship][:followed_id] contains the id of the user to follow;
+	# use our functions from the last exercise to have the current_user UNfollow them
+	def destroy
+		# your code here, populate the @user variable make the current_user unfollow them
+		
+		respond_to do |format|
+			format.html { redirect_to @user }
+			format.js
+		end
+	end
 end
 ---------------------------------------------------------------
 
 
-~/# bundle exec rspec spec/requests/relationship_spec.rb
+----------app/views/users/show.html.erb
+<% if signed_in? %>
+ <%= render 'follow_form' %>
+<% end %>
+---------------------------------------------------------------
+
+
+~/# bundle exec rspec spec/requests/relationships_spec.rb
 
 
 ~/# bundle exec rspec spec/models/user_spec.rb -e "feed"
@@ -161,6 +170,13 @@ def refresh
     format.js
   end
 end
+---------------------------------------------------------------
+
+
+----------app/views/micro_posts/refresh.js.erb
+var element = $("<%= j( render(@new_micro_posts) ) %>").hide();
+$('#user_feed').prepend(element);
+element.fadeIn();
 ---------------------------------------------------------------
 
 

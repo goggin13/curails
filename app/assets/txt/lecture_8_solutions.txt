@@ -1,0 +1,58 @@
+
+
+# Following methods
+----------app/models/user.rb
+def following?(other_user)
+  relationships.find_by_followed_id(other_user.id)
+end
+
+def follow!(other_user)
+  relationships.create!(followed_id: other_user.id)
+end
+
+def unfollow!(other_user)
+  relationships.find_by_followed_id(other_user.id).destroy
+end
+---------------------------------------------------------------
+
+
+----------app/controllers/relationships_controller.rb
+class RelationshipsController < ApplicationController
+
+  def create
+    # params[:relationship][:followed_id] contains the id of the user to follow;
+    # use our functions from the previous exercise to have the current_user 
+    # follow them
+    respond_to do |format|
+      @user = User.find(params[:relationship][:followed_id])
+      current_user.follow! @user
+    
+      format.html { redirect_to @user }
+      format.js
+    end
+  end
+
+  def destroy
+    # params[:relationship][:followed_id] contains the id of the user to follow;
+    # use our functions from the previous exercise to have the current_user 
+    # UNfollow them
+    respond_to do |format|
+      @user = User.find(params[:relationship][:followed_id])
+      current_user.unfollow! @user
+      
+      format.html { redirect_to @user }
+      format.js
+    end
+  end
+end
+---------------------------------------------------------------
+
+
+----------app/models/user.rb
+  def feed(paginate_options={page: 1})
+    followed_user_ids = followed_users.map { |u| u.id }
+    MicroPost.where('user_id = ? or user_id in (?)', id, followed_user_ids)
+             .order('created_at DESC')
+             .paginate(paginate_options)
+  end
+---------------------------------------------------------------
